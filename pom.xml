@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>lk.rajaguru.web</groupId>
-    <artifactId>J2EE-Security-with-db</artifactId>
+    <artifactId>J2EE-JWT</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
-    <name>security_with_db</name>
+    <name>jwt_security</name>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
