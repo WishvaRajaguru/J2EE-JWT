@@ -12,7 +12,7 @@ import java.util.Set;
 public class JWTUtil {
     //jwt token format - header.payload.secret (these will be encoded)
     //the secret to be used for jwt token
-    private static final String JWT_SECRET = "*eT5UQ+,$nR\"8(\\;z51jI8HsQ~si3HV5";
+    private static final String JWT_SECRET = "McEtdnfKJDPmChRiBCCwELjrlFZPevibULzW";
     //to ensure the secret is more secure by getting its bite values and turning them into hash
     private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
     //time for the token to be expired (1 hour - 60 * 60 * 1000) in millis
@@ -24,7 +24,7 @@ public class JWTUtil {
                 .claim("roles", roles)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + EXPIRES_IN))
-                .signWith(SECRET_KEY, Jwts.SIG.HS512)
+                .signWith(SECRET_KEY, Jwts.SIG.HS256)
                 .compact();
     }
 

@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lk.rajaguru.web.app.security.security.Credential;
@@ -28,7 +29,7 @@ public class AuthController {
             String token = JWTUtil.generateToken(credential.getUsername(), roles);
 
             JsonObject jsonObject = Json.createObjectBuilder().add("token", token).build();
-            return Response.ok(jsonObject).build();
+            return Response.ok().header(HttpHeaders.AUTHORIZATION,"Bearer "+token).build();
         }
         return Response.status(Response.Status.UNAUTHORIZED).build();
     }
@@ -37,7 +38,7 @@ public class AuthController {
     @Path("register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String register(String username, String password) {
-        return "Auth.register";
+    public Response register(String json) {
+        return Response.ok().build();
     }
 }
