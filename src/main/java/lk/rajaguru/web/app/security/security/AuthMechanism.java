@@ -1,5 +1,7 @@
 package lk.rajaguru.web.app.security.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.AuthenticationException;
@@ -13,8 +15,12 @@ import jakarta.security.enterprise.identitystore.CredentialValidationResult;
 import jakarta.security.enterprise.identitystore.IdentityStore;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.HttpHeaders;
+import lk.rajaguru.web.app.security.util.JWTUtil;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @AutoApplySession
@@ -33,14 +39,30 @@ public class AuthMechanism implements HttpAuthenticationMechanism {
     @Override
     public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext context) throws AuthenticationException {
 
-        String url = request.getServletPath();
-        System.out.println("Path: " + url);
-
+//        String url = request.getServletPath();
+//        System.out.println("Path: " + url);
 //        if (isWhiteListed(url)) {
 //            System.out.println("From whitelist");
 //            return context.doNothing();
 //        }
 
+        //the token based authentication part
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if(authHeader != null && !authHeader.startsWith("Bearer ")) {
+            try{
+                String token = authHeader.replaceFirst("Bearer ", "");
+                Claims claims = JWTUtil.parseToken(token).getPayload();
+                String username = claims.getSubject();
+                List roles = claims.get("roles", List.class);
+
+                CredentialValidationResult result = new CredentialValidationResult(username, new HashSet<>(roles));
+                return context.notifyContainerAboutLogin(result);
+            }catch (JwtException e){
+                return context.responseUnauthorized(); // invalid token
+            }
+        }
+
+        //works for web resources validation (servlets, jsp, etc...)
         AuthenticationParameters authParameters = context.getAuthParameters();
         if(authParameters.getCredential() != null) {
             CredentialValidationResult result = identityStore.validate(authParameters.getCredential());
